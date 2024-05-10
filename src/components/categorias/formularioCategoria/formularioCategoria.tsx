@@ -1,5 +1,4 @@
-
-import React, { ChangeEvent, useContext, useEffect, useState } from 'react';
+import  { ChangeEvent, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Categoria from '../../../models/categoria';
 import { atualizar, buscar, cadastrar } from '../../../services/service';
@@ -11,6 +10,8 @@ function FormularioCategoria() {
   let navigate = useNavigate();
 
   const { id } = useParams<{ id: string }>();
+
+  
 
   async function buscarPorId(id: string) {
     await buscar(`/categorias/${id}`, setCategoria);
@@ -31,22 +32,22 @@ function FormularioCategoria() {
     console.log(JSON.stringify(categoria))
   }
 
-  async function gerarNovaCategoria(e: ChangeEvent<HTMLFormElement>) {
+  async function gerarNovoTema(e: ChangeEvent<HTMLFormElement>) {
     e.preventDefault()
 
     if (id !== undefined) {
       try {
         await atualizar(`/categorias`, categoria, setCategoria)
 
-        toastAlerta('Tema atualizado com sucesso', 'sucesso')
+        toastAlerta('categoria atualizada com sucesso', 'sucesso')
         retornar()
 
       } catch (error: any) {
-        if (error.toString().includes('404')) {
-          toastAlerta('página não encontrada!', 'info')
-        
+        if (error.toString().includes('403')) {
+          toastAlerta('O token expirou, favor logar novamente', 'info')
+         
         } else {
-          toastAlerta('Erro ao atualizar o Tema', 'erro')
+          toastAlerta('Erro ao atualizar a categoria', 'erro')
         }
 
       }
@@ -55,13 +56,14 @@ function FormularioCategoria() {
       try {
         await cadastrar(`/categorias`, categoria, setCategoria)
 
-        toastAlerta('Tema cadastrado com sucesso', 'sucesso')
+        toastAlerta('Categoria cadastrada com sucesso', 'sucesso')
 
       } catch (error: any) {
-        if (error.toString().includes('404')) {
-          toastAlerta('página não encontrada!', 'info')
+        if (error.toString().includes('403')) {
+          toastAlerta('O token expirou, favor logar novamente', 'info')
+        
         } else {
-          toastAlerta('Erro ao cadastrado a categoria', 'erro')
+          toastAlerta('Erro ao cadastrar categoria', 'erro')
         }
       }
     }
@@ -73,13 +75,14 @@ function FormularioCategoria() {
     navigate("/categorias")
   }
 
+
   return (
     <div className="container flex flex-col items-center justify-center mx-auto">
       <h1 className="text-4xl text-center my-8">
         {id === undefined ? 'Cadastre uma nova categoria' : 'Editar categoria'}
       </h1>
 
-      <form className="w-1/2 flex flex-col gap-4" onSubmit={gerarNovaCategoria}>
+      <form className="w-1/2 flex flex-col gap-4" onSubmit={gerarNovoTema}>
         <div className="flex flex-col gap-2">
           <label htmlFor="descricao">Descrição da categoria</label>
           <input
@@ -92,7 +95,7 @@ function FormularioCategoria() {
           />
         </div>
         <button
-          className="rounded text-slate-100 bg-red-400 hover:bg-red-800 w-1/2 py-2 mx-auto block"
+          className="rounded text-slate-100 bg-indigo-400 hover:bg-indigo-800 w-1/2 py-2 mx-auto block"
           type="submit"
         >
           {id === undefined ? 'Cadastrar' : 'Editar'}
